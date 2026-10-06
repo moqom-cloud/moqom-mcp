@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    steps:
+      # go.mod replaces github.com/moqom-cloud/moqom-go with ../moqom-go until
+      # the SDK has a published tag, so both repositories are checked out side
+      # by side. This needs moqom-cloud/moqom-go to be public; while it is not,
+      # either add `token: ${{ secrets.MOQOM_GO_READ_TOKEN }}` to the second
+      # checkout or vendor the SDK. Once moqom-go is tagged, drop the replace
+      # directive and this second checkout.
+      - uses: actions/checkout@v4
+        with:
+          path: moqom-mcp
+
+      - uses: actions/checkout@v4
+        with:
+          repository: moqom-cloud/moqom-go
+          path: moqom-go
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: moqom-mcp/go.mod
+          cache-dependency-path: moqom-mcp/go.sum
+
+      - name: Format
+        working-directory: moqom-mcp
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt needed on:"; echo "$unformatted"; exit 1
+          fi
+
+      - name: Vet
+        working-directory: moqom-mcp
+        run: go vet ./...
+
+      - name: Build
+        working-directory: moqom-mcp
+        run: go build ./...
+
+      # Tests use httptest fakes and in-memory MCP transports: no MOQOM account,
+      # API key, or outside network is needed.
+      - name: Test
+        working-directory: moqom-mcp
+        run: go test -race ./...

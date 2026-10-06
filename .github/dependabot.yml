@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # go.mod replaces moqom-go with ../moqom-go, which Dependabot cannot see, so
+  # updates that touch the SDK will fail to resolve until it is tagged and the
+  # replace directive goes. Everything else updates normally.
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: github.com/moqom-cloud/moqom-go
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

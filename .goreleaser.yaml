@@ -1,0 +1,68 @@
+# GoReleaser v2. Builds prebuilt binaries for every release tag.
+#
+# Note: go.mod currently replaces moqom-go with ../moqom-go, so a release job
+# must check moqom-go out next to this repository (as ci.yml does) until the
+# SDK is tagged and the replace directive is removed.
+version: 2
+
+project_name: moqom-mcp
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: moqom-mcp
+    main: .
+    binary: moqom-mcp
+    env:
+      - CGO_ENABLED=0
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - NOTICE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+# Homebrew tap: placeholder until moqom-cloud/homebrew-tap exists.
+# TODO(Elliott): create the tap repository, add a HOMEBREW_TAP_TOKEN secret to
+# the release workflow, add `token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"` under
+# repository, and set skip_upload to false.
+brews:
+  - name: moqom-mcp
+    repository:
+      owner: moqom-cloud
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://moqom.dev
+    description: MCP server for operating a MOQOM tenant from AI agents
+    license: Apache-2.0
+    skip_upload: true
+    test: |
+      system "#{bin}/moqom-mcp", "--version"
