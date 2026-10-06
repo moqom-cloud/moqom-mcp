@@ -28,11 +28,11 @@ jobs:
     name: govulncheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: moqom-mcp
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: moqom-cloud/moqom-go
           path: moqom-go
@@ -53,7 +53,7 @@ jobs:
     name: Secrets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -72,11 +72,11 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: moqom-mcp
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: moqom-cloud/moqom-go
           path: moqom-go
@@ -108,7 +108,7 @@ jobs:
       security-events: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
