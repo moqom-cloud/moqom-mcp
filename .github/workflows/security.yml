@@ -37,7 +37,7 @@ jobs:
           repository: moqom-cloud/moqom-go
           path: moqom-go
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: moqom-mcp/go.mod
           cache-dependency-path: moqom-mcp/go.sum
@@ -81,7 +81,7 @@ jobs:
           repository: moqom-cloud/moqom-go
           path: moqom-go
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: moqom-mcp/go.mod
           cache-dependency-path: moqom-mcp/go.sum
