@@ -23,11 +23,11 @@ jobs:
       # either add `token: ${{ secrets.MOQOM_GO_READ_TOKEN }}` to the second
       # checkout or vendor the SDK. Once moqom-go is tagged, drop the replace
       # directive and this second checkout.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: moqom-mcp
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: moqom-cloud/moqom-go
           path: moqom-go
